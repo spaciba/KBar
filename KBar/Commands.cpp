@@ -11,28 +11,16 @@ int dir(String^ path)
 		HANDLE hFind = INVALID_HANDLE_VALUE;
 		DWORD dwError = 0;
 
-		// Check that the input path plus 3 is not longer than MAX_PATH.
-		// Three characters are for the "\*" plus NULL appended below.
-
-		//StringCchLength(path[1], MAX_PATH, &length_of_arg);
-
-		/*if (length_of_arg > (MAX_PATH - 3))
-		{
-			_tprintf(TEXT("\nDirectory path is too long.\n"));
-			return (-1);
-		}*/
 
 		Console::WriteLine("dir {0}", path);
 
-		// Prepare string for use with FindFile functions.  First, copy the
-		// string to a buffer, then append '\*' to the directory name.
 
 		pin_ptr<const wchar_t> wpath = PtrToStringChars(path);
 
 		StringCchCopy(szDir, MAX_PATH, wpath);
 		StringCchCat(szDir, MAX_PATH, TEXT("\\*"));
 
-		// Find the first file in the directory.
+	
 
 		hFind = FindFirstFile(szDir, &ffd);
 
@@ -41,7 +29,7 @@ int dir(String^ path)
 			return dwError;
 		}
 
-		// List all the files in the directory with some info about them.
+	
 
 		do
 		{

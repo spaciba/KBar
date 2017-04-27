@@ -5,6 +5,7 @@
 
 
 
+
 int wmain()
 {
 	String^ input = "";
@@ -26,17 +27,24 @@ int wmain()
 
 		if (String::Equals(tok_input[0], "dir"))
 		{
-			if (tok_input->Length < 2)
+			try
 			{
+				if (tok_input->Length < 2)
+				{
 
-				TCHAR cdBuff[MAX_PATH];
-				GetCurrentDirectory(MAX_PATH, cdBuff);
+					TCHAR cdBuff[MAX_PATH];
+					GetCurrentDirectory(MAX_PATH, cdBuff);
 
 
-				err = dir(gcnew System::String(cdBuff));
+					err = dir(gcnew System::String(cdBuff));
+				}
+				else
+					err = dir(tok_input[1]);
 			}
-			else
-				err = dir(tok_input[1]);
+			catch (Exception^ e)
+			{
+				Console::WriteLine("Error code: {0}/n", e);
+			}
 		}
 
 		if (String::Equals(tok_input[0], "help"))
@@ -46,14 +54,39 @@ int wmain()
 
 		if (String::Equals(tok_input[0], "cd"))
 		{
-			if (tok_input->Length < 2)
-				Console::WriteLine("Please give cd an argument\n");
-			err = cd(tok_input[1]);
-			Console::WriteLine("Directory moved to {0}", tok_input[1]);
+			try
+			{
+				if (tok_input->Length < 2)
+					Console::WriteLine("Please give cd an argument\n");
+				else
+				{
+					err = cd(tok_input[1]);
+					if(err == 0)
+						Console::WriteLine("Directory moved to {0}", tok_input[1]);
+				}
+			}
+			catch (Exception^ e)
+			{
+				Console::WriteLine("Error code: {0}/n", e);
+			}
 		}
 
+		if (String::Equals(tok_input[0], "screenshot"))
+		{
+			try
+			{
+				Console::WriteLine("Please enter the destination of the screenshot\n");
+				String^ uin = (Console::ReadLine());
+				
 
-		printf("Error: %d\n", dir_ret);
+				screenshot(uin);
+			}
+			catch (Exception^ e)
+			{
+				Console::WriteLine("Error code: {0}/n", e);
+			}
+		}
+
 	} while (!String::Equals(tok_input[0], "exit"));
 
 }

@@ -2,12 +2,12 @@
 
 
 
+
 int dir(String^ path)
 {
 	WIN32_FIND_DATA ffd;
 	LARGE_INTEGER filesize;
 	TCHAR szDir[MAX_PATH];
-	size_t length_of_arg;
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	DWORD dwError = 0;
 
@@ -57,7 +57,6 @@ int dir(String^ path)
 
 int cd(String^ path)
 {
-	TCHAR dirBuff[MAX_PATH];
 	DWORD ret;
 
 	pin_ptr<const wchar_t> wname = PtrToStringChars(path);
@@ -65,5 +64,76 @@ int cd(String^ path)
 	ret = SetCurrentDirectory(wname);
 
 	return ret;
+}
+
+
+
+int screenshot(String^ fname)
+{
+	const char* standardname = (const char*)(void*)Marshal::StringToHGlobalAnsi(fname);
+
+	RECT desktop;
+	int x = 0;
+	int y = 0;
+
+	const HWND desktopHandle = GetDesktopWindow();
+	GetWindowRect(desktopHandle, &desktop);
+	x = desktop.right;
+	y = desktop.bottom;
+
+
+
+	HDC     hScreen = GetDC(NULL);
+	HDC     hDC = CreateCompatibleDC(hScreen);
+	HBITMAP hBitmap = CreateCompatibleBitmap(hScreen, x, y);
+	HGDIOBJ old_obj = SelectObject(hDC, hBitmap);
+	BOOL    bRet = BitBlt(hDC, 0, 0, x, y, hScreen, 0, 0, SRCCOPY);
+
+	// save bitmap to file
+	BITMAP bmp;
+	GetObject(hBitmap, sizeof(BITMAP), &bmp);
+	
+
+	BITMAPINFO bmi = { 0 };
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmi.bmiHeader.biWidth = bmp.bmWidth;
+	bmi.bmiHeader.biHeight = -bmp.bmHeight;
+	bmi.bmiHeader.biPlanes = 1;
+	bmi.bmiHeader.biBitCount = 32;
+	bmi.bmiHeader.biCompression = BI_RGB;
+	bmi.bmiHeader.biSizeImage = bmp.bmWidth* bmp.bmHeight * 32 / 8;
+
+	FILE* image = fopen(standardname, "wb");
+	
+	BITMAPFILEHEADER bmp_fh;
+	bmp_fh.bfType = 0x4D42;
+	bmp_fh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+	bmp_fh.bfSize = bmi.bmiHeader.biSizeImage + bmp_fh.bfOffBits;
+	bmp_fh.bfReserved1 = 0;
+	bmp_fh.bfReserved2 = 0;
+	BYTE *lpBits = new BYTE[bmp.bmWidth*bmp.bmHeight*bmp.bmBitsPixel / 8];
+	GetBitmapBits((HBITMAP)hBitmap, (bmp.bmWidth*bmp.bmHeight*bmp.bmBitsPixel / 8), lpBits);
+
+	try
+	{
+		fwrite(&bmp_fh, sizeof(bmp_fh), 1, image);
+		fwrite(&bmi.bmiHeader, sizeof(BITMAPINFOHEADER), 1, image);
+		fwrite(lpBits, bmi.bmiHeader.biSizeImage, 1, image);
+		fclose(image);
+	}
+	catch (Exception^ e)
+	{
+		Console::WriteLine("Error writing the file: {0}", e);
+	}
+
+	
+
+
+	// clean up
+	SelectObject(hDC, old_obj);
+	DeleteDC(hDC);
+	ReleaseDC(NULL, hScreen);
+	DeleteObject(hBitmap);
+	return 0;
 }
 

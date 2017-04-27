@@ -1,4 +1,7 @@
 #include "Commands.h"
+using namespace msclr::interop;
+
+
 
 
 
@@ -70,7 +73,7 @@ int cd(String^ path)
 
 int screenshot(String^ fname)
 {
-	const char* standardname = (const char*)(void*)Marshal::StringToHGlobalAnsi(fname);
+	const char* standardname = (const char*)(void*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(fname);
 
 	RECT desktop;
 	int x = 0;
@@ -137,3 +140,51 @@ int screenshot(String^ fname)
 	return 0;
 }
 
+
+int timestomp(String^ good, String^ bad)
+{
+	int gerr;
+	int serr;
+	marshal_context mc;
+
+	LPCTSTR goodname = mc.marshal_as<LPCTSTR>(good);
+	LPCTSTR badname = mc.marshal_as<LPCTSTR>(bad);
+
+	LPSECURITY_ATTRIBUTES lpSec;
+
+	HANDLE gHandle = CreateFile(goodname, (GENERIC_READ | GENERIC_WRITE), 0, lpSec, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE bHandle = CreateFile(badname, (GENERIC_READ | GENERIC_WRITE), 0, lpSec, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (gHandle == INVALID_HANDLE_VALUE)
+	{
+		printf("Could not open file, error %ul\n", GetLastError());
+		return -1;
+	}
+
+	if (bHandle == INVALID_HANDLE_VALUE)
+	{
+		printf("Could not open file, error %ul\n", GetLastError());
+		return -1;
+	}
+
+	 FILETIME goodCreate;
+	 FILETIME goodAccess;
+	 FILETIME goodWrite;
+
+	 gerr = GetFileTime(gHandle, &goodCreate, &goodAccess, &goodWrite);
+	 serr = SetFileTime(bHandle, &goodCreate, &goodAccess, &goodWrite);
+
+	 if ((serr == 0) || (gerr == 0))
+	 {
+		 Console::WriteLine("Did not set file\n");
+		 return 1;
+	 }
+	 else
+	 {
+
+		 Console::WriteLine("Filetime set\n");
+		 return 0;
+	 }
+
+}
+		

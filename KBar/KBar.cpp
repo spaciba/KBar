@@ -87,6 +87,27 @@ int wmain()
 			}
 		}
 
+		if (String::Equals(tok_input[0], "timestomp"))
+		{
+			try
+			{
+				Console::WriteLine("Please enter the files to match\t[good] [bad]\n");
+				String^ uin = (Console::ReadLine());
+				String^ good;
+				String^ bad;
+
+				good = uin->Split(delimin)[0];
+				bad = uin->Split(delimin)[1];
+
+
+				timestomp(good, bad);
+			}
+			catch (Exception^ e)
+			{
+				Console::WriteLine("Error code: {0}/n", e);
+			}
+		}
+
 	} while (!String::Equals(tok_input[0], "exit"));
 
 }

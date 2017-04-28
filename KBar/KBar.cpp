@@ -108,6 +108,18 @@ int wmain()
 			}
 		}
 
+		if (String::Equals(tok_input[0], "winlist"))
+		{
+			try
+			{
+				winlist();
+			}
+			catch (Exception^ e)
+			{
+				Console::WriteLine("Couldn't get windows: {0}/n", e);
+			}
+		}
+
 	} while (!String::Equals(tok_input[0], "exit"));
 
 }

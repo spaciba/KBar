@@ -23,7 +23,7 @@ int screenshot(String^ fname);
 //int get(String^ rfile);
 //int put(String^ lfile, String^ rfile);
 int timestomp(String^ good, String^ bad);
-LPCTSTR* winlist();
+void winlist();
 LPCTSTR* servlist();
 LPCSTR* proclist();
 

@@ -187,4 +187,33 @@ int timestomp(String^ good, String^ bad)
 	 }
 
 }
+
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
+{
+
+	if (IsWindowVisible(hwnd))
+	{
+	
+	int len = GetWindowTextLength(hwnd);
+
+	TCHAR* buff;
+	buff = new TCHAR[len + 1];
+	memset(buff, 0, (len + 1) * sizeof(TCHAR));
+
+	GetWindowText(hwnd, buff, len + 1);
+	String^ winTitle = gcnew String(buff);
+	delete[] buff;
+
+	Console::WriteLine(winTitle);
+	return TRUE;
+}
+	return TRUE;
+}
+
+
+void winlist()
+{
+	EnumWindows(EnumWindowsProc, NULL);
+
+}
 		

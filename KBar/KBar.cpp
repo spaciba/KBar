@@ -49,7 +49,8 @@ int wmain()
 
 		if (String::Equals(tok_input[0], "help"))
 		{
-			_tprintf(TEXT("Commands are: \n dir -- dir [path to dir]\ncd\nscreenshot\nget\nput\ntimestomp\nwinlist\nservlist\nproclist\n"));
+			_tprintf(TEXT("Commands are: \n dir -- dir [path to dir]\ncd\nscreenshot\nget\n \
+				put\ntimestomp\nwinlist\nservlist [remote computer (optional)]\nproclist\n"));
 		}
 
 		if (String::Equals(tok_input[0], "cd"))

@@ -216,4 +216,198 @@ void winlist()
 	EnumWindows(EnumWindowsProc, NULL);
 
 }
+
+
+//SERVICE ENUM CODE BLATANTLY RIPPED FROM HERE: http://stackoverflow.com/questions/14756347/when-calling-enumservicesstatusex-twice-i-still-get-eror-more-data-in-c
+
+void serv_active()
+{
+	SC_HANDLE hscm = OpenSCManager(NULL, SERVICES_ACTIVE_DATABASE, (SC_MANAGER_ENUMERATE_SERVICE));
+
+	if (hscm == INVALID_HANDLE_VALUE)
+	{
+		printf("Could not open file, error %ul\n", GetLastError());
+		return;
+	}
+
+	void* buf = NULL;
+	DWORD bufSize = 0;
+	DWORD moreBytesNeeded, serviceCount;
+	for (;;) {
+		printf("----------------------ACTIVE SERVICES--------------------------\n\n");
+		if (EnumServicesStatusEx(
+			hscm,
+			SC_ENUM_PROCESS_INFO,
+			SERVICE_WIN32,
+			SERVICE_ACTIVE,
+			(LPBYTE)buf,
+			bufSize,
+			&moreBytesNeeded,
+			&serviceCount,
+			NULL,
+			NULL)) {
+			ENUM_SERVICE_STATUS_PROCESS* services = (ENUM_SERVICE_STATUS_PROCESS*)buf;
+			for (DWORD i = 0; i < serviceCount; ++i) {
+				printf("%ls\n", services[i].lpDisplayName);
+			}
+			free(buf);
+			return;
+		}
+		int err = GetLastError();
+		if (ERROR_MORE_DATA != err) {
+			free(buf);
+			return;
+		}
+		bufSize += moreBytesNeeded;
+		free(buf);
+		buf = malloc(bufSize);
+	}
+}
+
+void serv_inactive()
+{
+	SC_HANDLE hscm = OpenSCManager(NULL, SERVICES_ACTIVE_DATABASE, (SC_MANAGER_ENUMERATE_SERVICE));
+
+	if (hscm == INVALID_HANDLE_VALUE)
+	{
+		printf("Could not open file, error %ul\n", GetLastError());
+		return;
+	}
+
+	void* buf = NULL;
+	DWORD bufSize = 0;
+	DWORD moreBytesNeeded, serviceCount;
+	for (;;) {
+		printf("-----------------INACTIVE SERVICES-----------------------------------\n\n");
+		if (EnumServicesStatusEx(
+			hscm,
+			SC_ENUM_PROCESS_INFO,
+			SERVICE_WIN32,
+			SERVICE_INACTIVE,
+			(LPBYTE)buf,
+			bufSize,
+			&moreBytesNeeded,
+			&serviceCount,
+			NULL,
+			NULL)) {
+			ENUM_SERVICE_STATUS_PROCESS* services = (ENUM_SERVICE_STATUS_PROCESS*)buf;
+			for (DWORD i = 0; i < serviceCount; ++i) {
+				printf("%ls\n", services[i].lpDisplayName);
+			}
+			free(buf);
+			return;
+		}
+		int err = GetLastError();
+		if (ERROR_MORE_DATA != err) {
+			free(buf);
+			return;
+		}
+		bufSize += moreBytesNeeded;
+		free(buf);
+		buf = malloc(bufSize);
+	}
+}
+
+void servlist()
+{
+	serv_active();
+	serv_inactive();
+}
+
+void serv_remote_active(LPCTSTR com)
+{
+	SC_HANDLE hscm = OpenSCManager(com, SERVICES_ACTIVE_DATABASE, (SC_MANAGER_ENUMERATE_SERVICE));
+
+	if (hscm == INVALID_HANDLE_VALUE)
+	{
+		printf("Could not open file, error %ul\n", GetLastError());
+		return;
+	}
+
+	void* buf = NULL;
+	DWORD bufSize = 0;
+	DWORD moreBytesNeeded, serviceCount;
+	for (;;) {
+		printf("-----------------ACTIVE SERVICES-----------------------------------\n\n");
+		if (EnumServicesStatusEx(
+			hscm,
+			SC_ENUM_PROCESS_INFO,
+			SERVICE_WIN32,
+			SERVICE_INACTIVE,
+			(LPBYTE)buf,
+			bufSize,
+			&moreBytesNeeded,
+			&serviceCount,
+			NULL,
+			NULL)) {
+			ENUM_SERVICE_STATUS_PROCESS* services = (ENUM_SERVICE_STATUS_PROCESS*)buf;
+			for (DWORD i = 0; i < serviceCount; ++i) {
+				printf("%ls\n", services[i].lpDisplayName);
+			}
+			free(buf);
+			return;
+		}
+		int err = GetLastError();
+		if (ERROR_MORE_DATA != err) {
+			free(buf);
+			return;
+		}
+		bufSize += moreBytesNeeded;
+		free(buf);
+		buf = malloc(bufSize);
+	}
+}
+
+void serv_remote_inactive(LPCTSTR com)
+{
+	SC_HANDLE hscm = OpenSCManager(com, SERVICES_ACTIVE_DATABASE, (SC_MANAGER_ENUMERATE_SERVICE));
+
+	if (hscm == INVALID_HANDLE_VALUE)
+	{
+		printf("Could not open file, error %ul\n", GetLastError());
+		return;
+	}
+
+	void* buf = NULL;
+	DWORD bufSize = 0;
+	DWORD moreBytesNeeded, serviceCount;
+	for (;;) {
+		printf("-----------------INACTIVE SERVICES-----------------------------------\n\n");
+		if (EnumServicesStatusEx(
+			hscm,
+			SC_ENUM_PROCESS_INFO,
+			SERVICE_WIN32,
+			SERVICE_INACTIVE,
+			(LPBYTE)buf,
+			bufSize,
+			&moreBytesNeeded,
+			&serviceCount,
+			NULL,
+			NULL)) {
+			ENUM_SERVICE_STATUS_PROCESS* services = (ENUM_SERVICE_STATUS_PROCESS*)buf;
+			for (DWORD i = 0; i < serviceCount; ++i) {
+				printf("%ls\n", services[i].lpDisplayName);
+			}
+			free(buf);
+			return;
+		}
+		int err = GetLastError();
+		if (ERROR_MORE_DATA != err) {
+			free(buf);
+			return;
+		}
+		bufSize += moreBytesNeeded;
+		free(buf);
+		buf = malloc(bufSize);
+	}
+}
+
+void servlist_remote(String^ comp)
+{
+	marshal_context mc;
+	LPCTSTR comname = mc.marshal_as<LPCTSTR>(comp);
+
+	serv_remote_active(comname);
+	serv_remote_inactive(comname);
+}
 		

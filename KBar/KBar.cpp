@@ -120,6 +120,30 @@ int wmain()
 			}
 		}
 
+		if (String::Equals(tok_input[0], "servlist") && tok_input->Length == 1)
+		{
+			try
+			{
+				servlist();
+			}
+			catch (Exception^ e)
+			{
+				Console::WriteLine("Couldn't get services: {0}/n", e);
+			}
+		}
+
+		if (String::Equals(tok_input[0], "servlist") && tok_input->Length > 1)
+		{
+			try
+			{
+				servlist_remote(tok_input[1]);
+			}
+			catch (Exception^ e)
+			{
+				Console::WriteLine("Couldn't get services: {0}/n", e);
+			}
+		}
+
 	} while (!String::Equals(tok_input[0], "exit"));
 
 }
